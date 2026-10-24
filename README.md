@@ -17,7 +17,7 @@ graph TD
     subgraph ServerLayer [Phân tầng Server]
         ControllerSrv["CONTROLLER (Spring/Java Server)<br>Xử lý request từ REST API và Socket"]
         
-        subgraph ModelServer [MODEL (AuctionManager)]
+        subgraph ModelServer ["MODEL (AuctionManager)"]
             Logic1["Xử lý lệnh đấu giá đồng thời"]
             Logic2["Auto-Bidding (Queue)"]
             Logic3["Gia hạn phiên đấu giá"]
