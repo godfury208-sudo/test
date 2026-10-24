@@ -154,3 +154,90 @@ classDiagram
     BidTransaction "*" --> "1" Bidder : được đặt bởi (placed by)
     Seller "1" --> "*" Item : đăng bán (lists)
 ```
+``` mermaid
+classDiagram
+    direction TB
+    
+    %% Tầng Thực thể (Domain Entities - Rút gọn)
+    class User {
+        #String id
+        #String username
+    }
+    class Item {
+        #String id
+        #double currentHighestPrice
+    }
+    class Auction {
+        -String id
+        -String status
+        -LocalDateTime endTime
+        +extendTime(int seconds)
+    }
+    class BidTransaction {
+        -double bidAmount
+        -LocalDateTime timestamp
+    }
+    
+    %% Tầng Truy cập dữ liệu (DAO Layer)
+    class AuctionDAO {
+        <<Interface>>
+        +save(Auction a) void
+        +findById(String id) Auction
+        +update(Auction a) void
+    }
+    class UserDAO {
+        <<Interface>>
+        +save(User u) void
+        +findById(String id) User
+    }
+    class ItemDAO {
+        <<Interface>>
+        +save(Item i) void
+        +updatePrice(String id, double price) void
+    }
+
+    %% Tầng Xử lý nghiệp vụ (Service Layer)
+    class AuctionService {
+        -AuctionDAO auctionDAO
+        -AutoBidService autoBidService
+        -AntiSnipingService antiSnipingService
+        -AuctionPublisher publisher
+        +processNewBid(BidTransaction bid, String auctionId) boolean
+        +closeAuction(String auctionId) void
+    }
+    
+    class AutoBidService {
+        +evaluateAutoBids(Auction auction, double currentPrice) void
+    }
+    
+    class AntiSnipingService {
+        -int thresholdSeconds
+        -int extendSeconds
+        +checkAndExtend(Auction auction, LocalDateTime bidTime) boolean
+    }
+    
+    %% Tầng Mạng & Thời gian thực (Observer Pattern)
+    class AuctionPublisher {
+        +subscribe(ClientObserver client) void
+        +notifyBidUpdate(Auction auction) void
+    }
+
+    %% Mối quan hệ (Relationships)
+    %% Service gọi DAO
+    AuctionService --> AuctionDAO : ghi/đọc DB
+    
+    %% Service gọi các Service phụ trợ
+    AuctionService ..> AutoBidService : điều phối
+    AuctionService ..> AntiSnipingService : điều phối
+    AuctionService --> AuctionPublisher : đẩy thông báo realtime
+    
+    %% DAO thao tác với Entity
+    AuctionDAO ..> Auction : truy xuất
+    UserDAO ..> User : truy xuất
+    ItemDAO ..> Item : truy xuất
+    
+    %% Quan hệ Entity
+    Auction "1" *-- "1" Item : quản lý
+    Auction "1" *-- "*" BidTransaction : lưu lịch sử
+    BidTransaction "*" --> "1" User : đặt bởi
+```
