@@ -49,3 +49,108 @@ graph TD
     %% Luồng Database an toàn
     DAO <-->|Đọc / Ghi dữ liệu| DB
 ```
+``` mermaid
+classDiagram
+    direction BT
+    
+    %% Lớp cơ sở (Abstraction)
+    class Entity {
+        <<abstract>>
+        #String id
+        +getId() String
+        +setId(String id) void
+    }
+    
+    %% Phân cấp User (Inheritance)
+    class User {
+        <<abstract>>
+        #String username
+        #String password
+        +login() boolean
+        +logout() void
+        +printInfo()* void
+    }
+    
+    class Bidder {
+        -double maxAutoBid
+        -double increment
+        +placeBid(Auction auction, double amount) boolean
+        +setupAutoBid(double maxBid, double increment) void
+        +printInfo() void
+    }
+    
+    class Seller {
+        +createItem(Item item) void
+        +manageItem(Item item) void
+        +printInfo() void
+    }
+    
+    class Admin {
+        +manageSystem() void
+        +printInfo() void
+    }
+    
+    %% Phân cấp Item (Inheritance)
+    class Item {
+        <<abstract>>
+        #String name
+        #String description
+        #double startingPrice
+        #double currentHighestPrice
+        #LocalDateTime startTime
+        #LocalDateTime endTime
+        +printInfo()* void
+    }
+    
+    class Electronics {
+        -String warrantyPeriod
+        +printInfo() void
+    }
+    
+    class Art {
+        -String artist
+        -String era
+        +printInfo() void
+    }
+    
+    class Vehicle {
+        -String engineType
+        -int year
+        +printInfo() void
+    }
+    
+    %% Quản lý đấu giá
+    class Auction {
+        -Item item
+        -String status
+        -List~BidTransaction~ history
+        +startAuction() void
+        +closeAuction() void
+        +determineWinner() User
+        +extendAuctionTime(int extraSeconds) void
+    }
+    
+    class BidTransaction {
+        -double bidAmount
+        -LocalDateTime timestamp
+        -User bidder
+        +isValid() boolean
+    }
+    
+    %% Định nghĩa các mối quan hệ (Relationships)
+    User --|> Entity
+    Item --|> Entity
+    
+    Bidder --|> User
+    Seller --|> User
+    Admin --|> User
+    
+    Electronics --|> Item
+    Art --|> Item
+    Vehicle --|> Item
+    
+    Auction "1" *-- "1" Item : quản lý (manages)
+    Auction "1" *-- "*" BidTransaction : chứa lịch sử (has history)
+    BidTransaction "*" --> "1" Bidder : được đặt bởi (placed by)
+    Seller "1" --> "*" Item : đăng bán (lists)
+```
