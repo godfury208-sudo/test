@@ -2,8 +2,8 @@
 graph TD
     subgraph ClientLayer [Phân tầng Client]
         View["VIEW<br>- Màn hình đấu giá trực tiếp<br>- Chi tiết sản phẩm<br>- Danh sách phiên đấu giá<br>- Quản lý sản phẩm (Seller)"]
-        ControllerFX["JAVAFX phần điều khiển<br>- Điều khiển UI<br>- Tạo yêu cầu<br>- Xử lý phản hồi"]
-        ModelFX["JAVAFX proxy phần model<br>- Quản lý trạng thái cục bộ<br>- Chuẩn bị dữ liệu gửi server"]
+        ControllerFX["JAVAFX controller<br>- Điều khiển UI<br>- Tạo yêu cầu<br>- Xử lý phản hồi"]
+        ModelFX["JAVAFX proxy model<br>- Quản lý trạng thái cục bộ<br>- Chuẩn bị dữ liệu gửi server"]
         
         View <-->|Tương tác / Cập nhật UI| ControllerFX
         ControllerFX <-->|Lấy / Ghi dữ liệu| ModelFX
